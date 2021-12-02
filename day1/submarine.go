@@ -48,10 +48,10 @@ func window_check(depths []int) int {
 		if i+2 == len(depths) {
 			break
 		}
-
 		if i-1 < 0 {
 			continue
 		}
+
 		windowOne := []int{depths[i-1], depth, depths[i+1]}
 		windowTwo := []int{depth, depths[i+1], depths[i+2]}
 		if check_delta(sum_window(windowOne), sum_window(windowTwo)) {
