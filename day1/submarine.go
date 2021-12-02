@@ -41,9 +41,7 @@ func main() {
 		if i+1 == len(depths) {
 			break
 		}
-		fmt.Printf("depth 1: %v\n", depth)
-		fmt.Printf("depth 2: %v\n", depths[i+1])
-		fmt.Printf("is deeper?: %t\n", check_delta(depth, depths[i+1]))
+
 		if check_delta(depth, depths[i+1]) {
 			increases = increases + 1
 		}
