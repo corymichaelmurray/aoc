@@ -22,25 +22,98 @@ func check(e error) {
 	}
 }
 
-func markCard(callouts []uint, card BingoCard) BingoCard {
-	for _, callout := range callouts {
+func printCard(card BingoCard) {
+	mark := "O"
+	for _, row := range card {
+		for _, number := range row {
+			if number.marked {
+				mark = "X"
+			}
+			fmt.Printf("[%v - %v]  ", number.number, mark)
+		}
+		fmt.Printf("\n")
+	}
+}
+
+func checkCard(callouts []uint, card BingoCard) (BingoCard, uint) {
+	var turns uint
+	for turn, callout := range callouts {
 		for _, row := range card {
-			for _, number := range row {
-				// fmt.Printf("callout: %v - %T\n", callout, callout)
-				// fmt.Printf(" number: %v - %T \n  mark: %v - %T\n", number.number, number.number, number.marked, number.marked)
+			for index, number := range row {
 				if number.number == callout {
-					number.marked = true
-					fmt.Println(number)
+					row[index].marked = true
+				}
+			}
+		}
+		if isWinner(card) {
+			turns = uint(turn)
+			break
+		}
+	}
+
+	return card, turns
+}
+
+func checkHorizontals(card BingoCard) bool {
+	for _, row := range card {
+		for i := 0; i < len(row); i++ {
+			if row[i].marked == false {
+				return false
+			}
+		}
+	}
+	return true
+}
+
+func checkVerticals(card BingoCard) bool {
+	for i := 0; i < len(card); i++ {
+		for _, row := range card {
+			if row[i].marked == false {
+				return false
+			}
+		}
+	}
+	return true
+}
+
+func checkLeftDiagonal(card BingoCard) bool {
+	for i := 0; i < len(card); i++ {
+		for j := 0; j < len(card[i]); j++ {
+			if i == j {
+				if card[i][j].marked == false {
+					return false
 				}
 			}
 		}
 	}
-
-	return card
+	return true
 }
 
-func isWinner(callouts []uint, card BingoCard) {
-	return
+func checkRightDiagonal(card BingoCard) bool {
+	for i := 0; i < len(card); i++ {
+		for j := 0; j < len(card[i]); j++ {
+			if i+j == len(card)-1 {
+				if card[i][j].marked == false {
+					return false
+				}
+			}
+		}
+	}
+	return true
+}
+
+func isWinner(card BingoCard) bool {
+	if checkHorizontals(card) {
+		return true
+	} else if checkVerticals(card) {
+		return true
+	} else if checkLeftDiagonal(card) {
+		return true
+	} else if checkRightDiagonal(card) {
+		return true
+	} else {
+		return false
+	}
 }
 
 func getBingoData() ([]uint, []BingoCard) {
@@ -63,7 +136,7 @@ func getBingoData() ([]uint, []BingoCard) {
 		check(err)
 		callouts = append(callouts, uint(calloutNumber))
 	}
-
+	fmt.Printf("length: %v\n", len(callouts))
 	cardScanner := bufio.NewScanner(cardsFile)
 
 	// get bingo cards
@@ -95,17 +168,15 @@ func getBingoData() ([]uint, []BingoCard) {
 	return callouts, cards
 }
 
-// check cards
-// mark cards that won
-
 func main() {
 	callouts, cards := getBingoData()
 
 	fmt.Printf("%v\n", callouts)
 	fmt.Printf("unmarked\n-------------\n")
-	fmt.Printf("%v\n", cards[0])
+	printCard(cards[5])
 
-	markedCard := markCard(callouts, cards[0])
+	markedCard, turns := checkCard(callouts, cards[5])
 	fmt.Printf("marked\n-------------\n")
-	fmt.Printf("%v\n", markedCard)
+	printCard(markedCard)
+	fmt.Printf("\nturns: %v\n", turns)
 }
