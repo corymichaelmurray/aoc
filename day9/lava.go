@@ -104,7 +104,7 @@ func findSmoke(floor SeaFloor) []int {
 	return lowPoints
 }
 
-func calculateDanger(heights []int) ([]int, int) {
+func calculateDanger(heights []int) int {
 	var dangerValues []int
 	for _, height := range heights {
 		dangerValue := height + 1
@@ -114,13 +114,12 @@ func calculateDanger(heights []int) ([]int, int) {
 	for _, dangerValue := range dangerValues {
 		danger = danger + dangerValue
 	}
-	return dangerValues, danger
+	return danger
 }
 
 func main() {
 	seaFloor := loadFloor("input.txt")
 	lowPoints := findSmoke(seaFloor)
-	fmt.Printf("low points:\n%v", lowPoints)
-	dangerValues, danger := calculateDanger(lowPoints)
-	fmt.Printf("danger values:\n%v\ndanger: %v", dangerValues, danger)
+	danger := calculateDanger(lowPoints)
+	fmt.Printf("danger: %v\n", danger)
 }
